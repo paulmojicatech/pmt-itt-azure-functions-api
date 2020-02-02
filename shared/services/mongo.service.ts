@@ -66,13 +66,13 @@ export class MongoService {
     async updateCollection(collectionName: string, options: any, document: any): Promise<boolean> {
         try {
             const mongoClient = await this.connect();
-            await mongoClient
+            const updatedDoc = await mongoClient
                 .db(this._db)
                 .collection(collectionName)
                 .findOneAndUpdate(options, {$set: document});
-            return Promise.resolve(true);
+            return Promise.resolve(updatedDoc.value);
         } catch (err) {
-            return Promise.reject(err);
+            return Promise.reject();
         }
         
     }
