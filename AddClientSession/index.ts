@@ -23,7 +23,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         await mongoSvc.addToCollection('ClientSessions', newSession);
         context.res = {
             status: 200,
-            body: { clientId, newClientSession: clientSessionDate }
+            body: { clientSessionId: newSessionID, clientId, newClientSession: clientSessionDate }
         };
         
     } catch (err) {
