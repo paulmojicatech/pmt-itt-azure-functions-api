@@ -50,6 +50,34 @@ export class MongoService {
         return Promise.resolve(lastItem);
     }
 
+    async getJoinedTables(localTable: string, foreignTable: string, localField: string, foreignField: string, alias: string): Promise<any[]> {
+        let items = [];
+        try {
+            let client = await this.connect();
+            const joinClause = {
+                $lookup: {
+                    from: foreignTable,
+                    localField,
+                    foreignField,
+                    as: alias
+                }
+            };
+            await client
+                .db(this._db)
+                .collection(localTable)
+                .aggregate([joinClause])
+                .each(item => {
+                    items = [...items, item];
+                });
+            return Promise.resolve(items);
+    
+        } catch (err) {
+            return Promise.reject(err);
+        }
+        
+        return null;
+    }
+
     async addToCollection(collectionName: string, document: any): Promise<boolean> {
         let status = false;
         return new Promise<boolean>(async (resolve, reject) => {

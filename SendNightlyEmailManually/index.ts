@@ -43,9 +43,9 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         context.res = {
             status: 500,
             body: ex
-        }
+        };
     } finally {
-        if (mongoSvc) {
+        if (!!mongoSvc) {
             mongoSvc.disconnect();
         }
         context.done();
