@@ -74,8 +74,6 @@ export class MongoService {
         } catch (err) {
             return Promise.reject(err);
         }
-        
-        return null;
     }
 
     async addToCollection(collectionName: string, document: any): Promise<boolean> {
