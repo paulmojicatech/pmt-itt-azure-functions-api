@@ -2,7 +2,7 @@ import { AzureFunction, Context, HttpRequest } from '@azure/functions';
 import { MongoService } from '../shared/services/mongo.service';
 import { Client, ClientSession } from '../shared/models/clients.interface';
 
-const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<Client[]> {
+const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     let mongoSvc: MongoService = null;
     try {
         mongoSvc = new MongoService();
@@ -18,7 +18,10 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         };
         
     } catch (ex) {
-        return Promise.reject(ex);
+       context.res = {
+           status: 500,
+           body: ex
+       };
     } finally {
         mongoSvc.disconnect();
         context.done();
