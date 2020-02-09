@@ -27,9 +27,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
         const allClientsWithEmails = await mongoSvc.getCollection('Clients', clientsWhere);
         const clientSessionsWhere = {
-            ClientSessionDate: {
-                $gte: new Date('1/1/2020').toISOString()
-            }
+            ClientSessionDate: { $gte: "2019-12-01" }
         };
         const clientSessions = await mongoSvc.getCollection('ClientSessions', clientSessionsWhere);
         let clientsToSendTo = [];
