@@ -9,25 +9,17 @@ export class MongoService {
         Promise<any[]> {
         return new Promise<any[]>(async (resolve, reject) => {
 
-            let items: any[] = [];
-           
             try {
                 const client = await this.connect();
-                await client
+                const items = await client
                     .db(this._db)
                     .collection(collectionName)
                     .find(options)
-                    .forEach(item => {
-                        items.push(item);
-                    });
+                    .toArray();
                 resolve(items);
-            }
-
-            catch (ex) {
+            } catch (ex) {
                 reject(ex);
             }
-
-            return items;
 
         });
 

@@ -9,25 +9,34 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         mongoSvc = new MongoService();
         emailSvc = new EmailService();
 
-        const clientsWhere = { $and: [ 
-            {
-                ClientID: {
-                    $in: context.req.body.clientsToInclude
+        const clientsWhere = {
+            $and: [
+                {
+                    ClientID: {
+                        $in: req.body.clientsToInclude
+                    }
+                },
+                {
+                    ClientEmail: {
+                        $not: {
+                            $type: 10 // null type
+                        },
+                        $ne: "" // empty strings
+                    }
                 }
-            },
-            { 
-                ClientEmail: { 
-                    $not: { 
-                        $type: 10 // null type
-                    }, 
-                    $ne: "" // empty strings
-                } 
-            } 
-        ]};
+            ]
+        };
 
         const allClientsWithEmails = await mongoSvc.getCollection('Clients', clientsWhere);
+        const now = new Date().getTime();
+        const startDate = new Date(now + (24*60*60*1000)).toISOString();
+        const endDate = new Date(now + (2*24*60*60*1000)).toISOString();
         const clientSessionsWhere = {
-            ClientSessionDate: { $gte: "2019-12-01" }
+            $and: [{
+                ClientSessionDate: { $gte: startDate }
+            }, {
+                ClientSessionDate: { $lte: endDate }
+            }]
         };
         const clientSessions = await mongoSvc.getCollection('ClientSessions', clientSessionsWhere);
         let clientsToSendTo = [];
@@ -44,7 +53,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         await emailSvc.sendEmail('paulmojicatech@gmail.com', 'Testing Nightly Email', JSON.stringify(clientsToSendTo));
         if (!!clientsToSendTo) {
             clientsToSendTo.forEach(async client => {
-                //await emailSvc.sendEmail(client.ClientEmail, context.req.body.subject, context.req.body.message);
+                await emailSvc.sendEmail(client.ClientEmail, context.req.body.subject, context.req.body.message);
             });
         }
 
