@@ -9,30 +9,52 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         mongoSvc = new MongoService();
         emailSvc = new EmailService();
 
-        // const clientsWhere = { $and: [ 
-        //     {
-        //         ClientID: {
-        //             $in: context.req.body.clientsToInclude
-        //         }
-        //     },
-        //     { 
-        //         ClientEmail: { 
-        //             $not: { 
-        //                 $type: 10 // null type
-        //             }, 
-        //             $ne: "" // empty strings
-        //         } 
-        //     } 
-        // ]};
+        const clientsWhere = {
+            $and: [
+                {
+                    ClientID: {
+                        $in: req.body.clientsToInclude
+                    }
+                },
+                {
+                    ClientEmail: {
+                        $not: {
+                            $type: 10 // null type
+                        },
+                        $ne: "" // empty strings
+                    }
+                }
+            ]
+        };
 
-        //const clientsToSendTo = await mongoSvc.getCollection('Clients', clientsWhere);
-        const objsToSend = await mongoSvc.getJoinedTables('ClientSessions', 'Clients', 'ClientID', 'ClientID', 'client_docs');
-        console.log('Objects To Send', objsToSend);
-        await emailSvc.sendEmail('paulmojicatech@gmail.com', 'Testing Nightly Email', JSON.stringify(objsToSend));
-        if (!!objsToSend) {
-            objsToSend.forEach(async client => {
+        const allClientsWithEmails = await mongoSvc.getCollection('Clients', clientsWhere);
+        const now = new Date().getTime();
+        const startDate = new Date(now + (24*60*60*1000)).toISOString();
+        const endDate = new Date(now + (2*24*60*60*1000)).toISOString();
+        const clientSessionsWhere = {
+            $and: [{
+                ClientSessionDate: { $gte: startDate }
+            }, {
+                ClientSessionDate: { $lte: endDate }
+            }]
+        };
+        const clientSessions = await mongoSvc.getCollection('ClientSessions', clientSessionsWhere);
+        let clientsToSendTo = [];
+        clientSessions.forEach(session => {
+            const found = allClientsWithEmails.find(client => client.ClientID === session.ClientID);
+            if (!!found) {
+                clientsToSendTo = [...clientsToSendTo, {
+                    'ClientName': found.ClientName,
+                    'ClientEmail': found.ClientEmail,
+                    'SessionTime': session.ClientSessionDate
+                }];
+            }
+        });
+        await emailSvc.sendEmail('paulmojicatech@gmail.com', 'Testing Nightly Email', JSON.stringify(clientsToSendTo));
+        if (!!clientsToSendTo) {
+            clientsToSendTo.forEach(async client => {
                 await emailSvc.sendEmail(client.ClientEmail, context.req.body.subject, context.req.body.message);
-            });``
+            });
         }
 
         context.res = {
