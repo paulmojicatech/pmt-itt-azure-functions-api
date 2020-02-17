@@ -5,13 +5,14 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     let mongoSvc: MongoService;
     try {
         mongoSvc = new MongoService();
+        const { clientId, clientSessionId } = req.body.sessionToDelete;
         const deleteClause = {
-            ClientSessionID: +req.body.clientSessionId
+            ClientSessionID: clientSessionId
         };
         await mongoSvc.deleteItemFromCollection('ClientSessions', deleteClause);
         context.res = {
             status: 200,
-            body: { clientId: +req.body.clientId, clientSessionId: +req.body.clientSessionId }
+            body: { clientId: clientId, clientSessionId: clientSessionId }
         };
 
     } catch (err) {
