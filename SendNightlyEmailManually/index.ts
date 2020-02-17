@@ -2,6 +2,31 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { MongoService } from "../shared/services/mongo.service";
 import { EmailService } from "../shared/services/email.service";
 
+const getEmailBody = (clientName: string, sessionTime: string) => {
+    return `
+Dear ${clientName},
+
+This is a friendly reminder that you have an appointment scheduled with Kirstin R. Abraham, LCSW on ${sessionTime}.
+
+Your appointment is at the following location: 
+
+Kirstin R. Abraham, LCSW
+8211 Avanti Drive
+Marvin, NC 28173
+704-233-7594
+
+This is an automated email. If you need to reschedule or cancel your appointment, please call the office at 704 - 233 - 7594 or email: 
+kirstin.abraham@indiantrailtherapy.com
+
+The Private Practice of Kirstin R. Abraham, LCSW
+Tel: 704-233-7594
+Fax: 866-706-1632
+Email:kirstin.abraham@indiantrailtherapy.com
+Website:www.indiantrailtherapy.com
+Practice Address: 8211 Avanti Drive. Marvin, NC 28173
+    `;
+};
+
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     let mongoSvc: MongoService;
     let emailSvc: EmailService;
@@ -46,14 +71,14 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
                 clientsToSendTo = [...clientsToSendTo, {
                     'ClientName': found.ClientName,
                     'ClientEmail': found.ClientEmail,
-                    'SessionTime': session.ClientSessionDate
+                    'SessionTime': new Date(session.ClientSessionDate).toLocaleString()
                 }];
             }
         });
-        await emailSvc.sendEmail('paulmojicatech@gmail.com', 'Testing Nightly Email', JSON.stringify(clientsToSendTo));
+        //await emailSvc.sendEmail('paulmojicatech@gmail.com', 'Testing Nightly Email', JSON.stringify(clientsToSendTo));
         if (!!clientsToSendTo) {
             clientsToSendTo.forEach(async client => {
-                await emailSvc.sendEmail(client.ClientEmail, context.req.body.subject, context.req.body.message);
+                await emailSvc.sendEmail(client.ClientEmail, 'Upcoming Appointment Reminder' , getEmailBody(client.ClientName, client.SessionTime));
             });
         }
 
@@ -73,5 +98,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         context.done();
     }
 };
+
 
 export default httpTrigger;
