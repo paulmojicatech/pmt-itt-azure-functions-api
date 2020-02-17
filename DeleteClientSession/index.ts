@@ -5,7 +5,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     let mongoSvc: MongoService;
     try {
         mongoSvc = new MongoService();
-        const { clientId, clientSessionId } = req.body.sessionToDelete;
+        const { clientId, clientSessionId } = req.body;
         const deleteClause = {
             ClientSessionID: clientSessionId
         };
