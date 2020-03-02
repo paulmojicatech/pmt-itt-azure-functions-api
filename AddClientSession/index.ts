@@ -6,7 +6,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     try {
         mongoSvc = new MongoService();
         const clientId = +req.body.clientSessionToAdd.clientId;
-        const clientSessionDate = req.body.clientSessionToAdd.clientSessionDate;
+        const clientSessionDate = new Date(req.body.clientSessionToAdd.clientSessionDate);
 
         const lastClientSession = await mongoSvc.getlastDocumentInCollection('ClientSessions', 
             {}, 
