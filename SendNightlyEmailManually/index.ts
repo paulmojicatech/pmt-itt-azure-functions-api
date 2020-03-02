@@ -37,11 +37,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         const clientsWhere = {
             $and: [
                 {
-                    ClientID: {
-                        $in: req.body.clientsToInclude
-                    }
-                },
-                {
                     ClientEmail: {
                         $not: {
                             $type: 10 // null type
@@ -54,8 +49,8 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
         const allClientsWithEmails = await mongoSvc.getCollection('Clients', clientsWhere);
         const now = new Date().getTime();
-        const startDate = new Date(now + (24*60*60*1000)).toISOString();
-        const endDate = new Date(now + (2*24*60*60*1000)).toISOString();
+        const startDate = new Date(now + (24*60*60*1000));
+        const endDate = new Date(now + (2*24*60*60*1000));
         const clientSessionsWhere = {
             $and: [{
                 ClientSessionDate: { $gte: startDate }
@@ -75,17 +70,24 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
                 }];
             }
         });
-        //await emailSvc.sendEmail('paulmojicatech@gmail.com', 'Testing Nightly Email', JSON.stringify(clientsToSendTo));
-        if (!!clientsToSendTo) {
+        if (!!clientsToSendTo?.length) {
             clientsToSendTo.forEach(async client => {
                 await emailSvc.sendEmail(client.ClientEmail, 'Upcoming Appointment Reminder' , getEmailBody(client.ClientName, client.SessionTime));
+                
             });
+
+            context.res = {
+                status: 200,
+                body: "Emails sent"
+            };
+        } else {
+            context.res = {
+                status: 200,
+                body: 'No Clients scheduled'
+            }
         }
 
-        context.res = {
-            status: 200,
-            body: "Emails sent"
-        };
+        
     } catch (ex) {
         context.res = {
             status: 500,
