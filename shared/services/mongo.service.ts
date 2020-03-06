@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb';
 export class MongoService {
 
     private _client = new MongoClient(process.env['MongoClient']);
-    private _db = 'pmt-itt-dev';
+    private _db = process.env['DB'];
 
     async getCollection(collectionName: string, options: any = {}): 
         Promise<any[]> {
