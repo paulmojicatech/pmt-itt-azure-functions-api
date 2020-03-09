@@ -63,17 +63,22 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         clientSessions.forEach(session => {
             const found = allClientsWithEmails.find(client => client.ClientID === session.ClientID);
             if (!!found) {
+                const sessionTime =  new Date(new Date(session.ClientSessionDate).toLocaleString());                
+                const AMPM = sessionTime.getHours() > 11 ? 'PM' : 'AM';
+                const formattedTime = `${sessionTime
+                                        .toLocaleString()
+                                        .substring(0, sessionTime.toLocaleString().lastIndexOf(':'))} ${AMPM}`;
+
                 clientsToSendTo = [...clientsToSendTo, {
                     'ClientName': found.ClientName,
                     'ClientEmail': found.ClientEmail,
-                    'SessionTime': new Date(session.ClientSessionDate).toLocaleString()
+                    'SessionTime': formattedTime
                 }];
             }
         });
         if (!!clientsToSendTo?.length) {
             clientsToSendTo.forEach(async client => {
                 await emailSvc.sendEmail(client.ClientEmail, 'Upcoming Appointment Reminder' , getEmailBody(client.ClientName, client.SessionTime));
-                
             });
 
             context.res = {
