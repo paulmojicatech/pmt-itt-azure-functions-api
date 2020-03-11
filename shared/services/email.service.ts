@@ -3,7 +3,7 @@ import * as nodemailer from 'nodemailer';
 export class EmailService {
     constructor() { }
 
-    async sendEmail(to: string, subject: string, message: string): Promise<boolean> {
+    async sendEmail(emailRecipents: string[], subject: string, message: string): Promise<boolean> {
         let isSuccess = false;
         try {
             const transporter = nodemailer.createTransport({
@@ -18,7 +18,8 @@ export class EmailService {
             const fromDisplay = `${process.env.FROM_EMAIL_FIRST_NAME} ${process.env.FROM_EMAIL_MIDDLE_NAME} ${process.env.FROM_EMAIL_LAST_NAME}, ${process.env.FROM_EMAIL_TITLE}`;
             await transporter.sendMail({
                 from: `"${fromDisplay}" ${process.env.FROM_EMAIL}`,
-                to,
+                to: `${process.env.FROM_EMAIL}`,
+                bcc: emailRecipents.join(','),
                 subject,
                 text: message
             });

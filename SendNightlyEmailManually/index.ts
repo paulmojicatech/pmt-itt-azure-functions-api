@@ -78,14 +78,14 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         });
         if (!!clientsToSendTo?.length) {
             clientsToSendTo.forEach(async client => {
-                await emailSvc.sendEmail(client.ClientEmail, 'Upcoming Appointment Reminder' , getEmailBody(client.ClientName, client.SessionTime));
+                await emailSvc.sendEmail([client.ClientEmail], 'Upcoming Appointment Reminder' , getEmailBody(client.ClientName, client.SessionTime));
             });
 
             const confirmMessage = `${getEmailBody(clientsToSendTo[0].ClientName, clientsToSendTo[0].SessionTime)} 
             
             ${JSON.stringify(clientsToSendTo)}`;
 
-            await emailSvc.sendEmail(`${process.env.ADMIN_EMAIL}`, 'Upcoming Appointment Reminder' , confirmMessage);
+            await emailSvc.sendEmail([`${process.env.ADMIN_EMAIL}`], 'Upcoming Appointment Reminder' , confirmMessage);
 
             context.res = {
                 status: 200,

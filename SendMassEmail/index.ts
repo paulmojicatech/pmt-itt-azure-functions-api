@@ -28,13 +28,16 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         const clientsToSendTo = await mongoSvc.getCollection('Clients', clientsWhere);
         const { subject, message } = context.req.body;
         
-        await emailSvc.sendEmail(`${process.env.ADMIN_EMAIL}`, subject, `${message}
-        
+        await emailSvc.sendEmail([`${process.env.ADMIN_EMAIL}`], subject, `${message}
+
         ${JSON.stringify(clientsToSendTo)}`);
+        let emailRecipents: string[] = [];
         if (!!clientsToSendTo) {
             clientsToSendTo.forEach(async client => {
-                await emailSvc.sendEmail(client.ClientEmail, subject, message);
+                emailRecipents = [...emailRecipents, client.ClientEmail];
             });
+
+            await emailSvc.sendEmail(emailRecipents, subject, message);
         }
 
         context.res = {
