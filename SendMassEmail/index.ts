@@ -9,30 +9,32 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         mongoSvc = new MongoService();
         emailSvc = new EmailService();
 
-        // const clientsWhere = { $and: [ 
-        //     {
-        //         ClientID: {
-        //             $in: context.req.body.clientsToInclude
-        //         }
-        //     },
-        //     { 
-        //         ClientEmail: { 
-        //             $not: { 
-        //                 $type: 10 // null type
-        //             }, 
-        //             $ne: "" // empty strings
-        //         } 
-        //     } 
-        // ]};
+        const clientsWhere = { $and: [ 
+            {
+                ClientID: {
+                    $in: context.req.body.clientsToInclude
+                }
+            },
+            { 
+                ClientEmail: { 
+                    $not: { 
+                        $type: 10 // null type
+                    }, 
+                    $ne: "" // empty strings
+                } 
+            } 
+        ]};
 
-        //const clientsToSendTo = await mongoSvc.getCollection('Clients', clientsWhere);
-        const objsToSend = await mongoSvc.getJoinedTables('ClientSessions', 'Clients', 'ClientID', 'ClientID', 'client_docs');
-        console.log('Objects To Send', objsToSend);
-        await emailSvc.sendEmail('paulmojicatech@gmail.com', 'Testing Nightly Email', JSON.stringify(objsToSend));
-        if (!!objsToSend) {
-            objsToSend.forEach(async client => {
-                await emailSvc.sendEmail(client.ClientEmail, context.req.body.subject, context.req.body.message);
-            });``
+        const clientsToSendTo = await mongoSvc.getCollection('Clients', clientsWhere);
+        const { subject, message } = context.req.body;
+        
+        await emailSvc.sendEmail(`${process.env.ADMIN_EMAIL}`, subject, `${message}
+        
+        ${JSON.stringify(clientsToSendTo)}`);
+        if (!!clientsToSendTo) {
+            clientsToSendTo.forEach(async client => {
+                await emailSvc.sendEmail(client.ClientEmail, subject, message);
+            });
         }
 
         context.res = {
