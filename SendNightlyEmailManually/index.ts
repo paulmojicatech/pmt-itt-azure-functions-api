@@ -3,27 +3,28 @@ import { MongoService } from "../shared/services/mongo.service";
 import { EmailService } from "../shared/services/email.service";
 
 const getEmailBody = (clientName: string, sessionTime: string) => {
-    return `
-Dear ${clientName},
+    return `Hi ${clientName},
 
-This is a friendly reminder that you have an appointment scheduled with Kirstin R. Abraham, LCSW on ${sessionTime}.
+This is a reminder that you have a scheduled telehealth session with Kirstin Abraham, LCSW on ${sessionTime}. 
+    
+Prior to our session time, please visit my website at: www.marvintherapy.com (or www.indiantrailtherapy.com) and make the required co-payment or session fee under the tab called “make a payment”. You will be prompted to enter the payment amount and your payment information; you do not need to have a paypal account to use this system. Session will not take place without the advance session fee payment.
+   
+Currently, our telehealth sessions can take place through various methods of your choosing.
+    
+To reach me through VSee: You may download the VSee Clinic mobile app at https://go.vsee.me/h08px and enter the room code: h08px.
+    
+To reach me through Apple FaceTime: please call/ FaceTime 914-469-9824.
+    
+To reach me through Facebook Messenger: please find my Facebook page here, https://www.facebook.com/indiantrailtherapy/
+    
+To have a regular telephone session: you can reach me at (704) 233-7594.
+  
+Since I have no way of knowing what method of telehealth works best for each individual, it is your responsibility to call this provider during your scheduled session time. As a reminder, there is a 24 hour cancellation requirement to avoid being charged for a scheduled session slot that was not attended.
+    
+As always, please feel free to reach out anytime. I hope you are staying healthy admits these changing times. And, I look forward to our upcoming telehealth session.
 
-Your appointment is at the following location: 
-
+Warmly,
 Kirstin R. Abraham, LCSW
-8211 Avanti Drive
-Marvin, NC 28173
-704-233-7594
-
-This is an automated email. If you need to reschedule or cancel your appointment, please call the office at 704 - 233 - 7594 or email: 
-kirstin.abraham@indiantrailtherapy.com
-
-The Private Practice of Kirstin R. Abraham, LCSW
-Tel: 704-233-7594
-Fax: 866-706-1632
-Email:kirstin.abraham@indiantrailtherapy.com
-Website:www.indiantrailtherapy.com
-Practice Address: 8211 Avanti Drive. Marvin, NC 28173
     `;
 };
 
