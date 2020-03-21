@@ -64,11 +64,17 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         clientSessions.forEach(session => {
             const found = allClientsWithEmails.find(client => client.ClientID === session.ClientID);
             if (!!found) {
-                const sessionTime =  new Date(new Date(session.ClientSessionDate).toLocaleString());                
-                const AMPM = sessionTime.getHours() > 11 ? 'PM' : 'AM';
-                const formattedTime = `${sessionTime
+                const sessionTime =  new Date(session.ClientSessionDate);
+                const utc = new Date(Date.UTC(sessionTime.getFullYear(), 
+                    sessionTime.getMonth(), sessionTime.getDate(),
+                    sessionTime.getHours(), sessionTime.getMinutes()));
+                const offset = utc.getTimezoneOffset() * 60000;
+                const utcOffset = utc.getTime() + offset;
+                const estOffset = 1000 * 60 * 60 * -4;       
+                const estTime = new Date(utcOffset + estOffset);       
+                const formattedTime = `${estTime
                                         .toLocaleString()
-                                        .substring(0, sessionTime.toLocaleString().lastIndexOf(':'))} ${AMPM}`;
+                                        .substring(0, sessionTime.toString().lastIndexOf(':'))}`;
 
                 clientsToSendTo = [...clientsToSendTo, {
                     'ClientName': found.ClientName,
