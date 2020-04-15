@@ -157,15 +157,20 @@ const httpTrigger: AzureFunction = async function (
             sessionTime.getMinutes()
           )
         );
-        const offset = utc.getTimezoneOffset() * 60000;
-        const utcOffset = utc.getTime() + offset;
-        const estOffset = 1000 * 60 * 60 - 1;
-        const estTime = new Date(utcOffset + estOffset);
-        const hour = estTime.getHours();
-        const minute = estTime.getMinutes();
-        const day = estTime.getDay();
-        const month = estTime.getMonth();
-        const date = estTime.getDate();
+        const offset = process?.env?.PLATFORM === 'Azure' ?
+            utc.getHours() - 4 :
+            utc.getHours() + 4;
+        const timeZoneDate = new Date(utc.setHours(offset)); 
+        
+        const hour = timeZoneDate.getHours();
+        const minute = utc.getMinutes() === 29 ?
+          30 ?
+          59 : 
+          0 : 
+          utc.getMinutes();
+        const day = utc.getDay();
+        const month = utc.getMonth();
+        const date = utc.getDate();
         const formattedTime = `${getFormattedDateString(day, month, date, hour, minute)}`;
 
         clientsToSendTo = [
