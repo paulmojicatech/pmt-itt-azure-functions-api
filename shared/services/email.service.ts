@@ -7,13 +7,14 @@ export class EmailService {
         let isSuccess = false;
         try {
             const transporter = nodemailer.createTransport({
+                service: 'gmail',
                 host: process.env.SMTP_SERVER,
                 port: process.env.SMTP_PORT,
-                secure: false,
                 auth: {
                     user: process.env.FROM_EMAIL,
                     pass: process.env.FROM_PWD
-                }
+                },
+                requireTLS: true
             });
             const fromDisplay = `${process.env.FROM_EMAIL_FIRST_NAME} ${process.env.FROM_EMAIL_MIDDLE_NAME} ${process.env.FROM_EMAIL_LAST_NAME}, ${process.env.FROM_EMAIL_TITLE}`;
             await transporter.sendMail({
