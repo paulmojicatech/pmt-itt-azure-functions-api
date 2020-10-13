@@ -25,19 +25,18 @@ const httpTrigger: AzureFunction = async function (
         );
         if (isSuccess) {
             context.res = {
-                status: 200,
-                body: 'Success',
+                status: 200
             };
         } else {
             context.res = {
                 status: 500,
-                body: 'Email failed to send',
+                body: JSON.stringify({ error: 'Email failed to send' }),
             };
         }
     } catch (err) {
         context.res = {
             status: 500,
-            body: err,
+            body: JSON.stringify({error: err }),
         };
     } finally {
     }
