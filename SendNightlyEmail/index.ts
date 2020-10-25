@@ -85,7 +85,7 @@ const getFormattedDateString = (
 const getEmailBody = (clientName: string, sessionTime: string) => {
   return `Hi ${clientName},
   
-  This is a reminder that you have an upcoming TeleHealth appointment with Kirstin R. Abraham, LCSW scheduled for ${sessionTime}. You will receive a personalized email with your confidential Zoom meeting link, ID and password to use for your session. As always, if you prefer to use the telephone instead of Zoom you can do so by calling  (704) 233-7594 at our scheduled session time. Please feel free to make any payment due prior to your appointment on my website at: www.indiantrailtherapy.com under the tab called “make a payment”. I look forward to hearing from you during our scheduled session.
+  This is a reminder that you have an upcoming TeleHealth appointment with Kirstin R. Abraham, LCSW scheduled for ${sessionTime}. You may attend your session by clicking on the following link: https://sessions.psychologytoday.com/kirstinabraham . As always, if you prefer to call instead of using video you can do so by calling (704) 233-7594 at our scheduled session time. Please feel free to make any payment due prior to your appointment on my website at: www.marvintherapy.com under the tab called “make a payment”. I look forward to hearing from you during our scheduled session.
   
   Warmly,
   Kirstin R. Abraham, LCSW
