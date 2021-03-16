@@ -154,8 +154,8 @@ const timerTrigger: AzureFunction = async function (
         );
 
         const offset = process?.env?.PLATFORM === 'Azure' ?
-            utc.getHours() - 5 :
-            utc.getHours() + 5;
+            utc.getHours() - 4 :
+            utc.getHours() + 4;
         const timeZoneDate = new Date(utc.setHours(offset)); 
         const hour = timeZoneDate.getHours();
         
