@@ -185,11 +185,11 @@ const timerTrigger: AzureFunction = async function (
         });
         if (!!clientsToSendTo?.length) {
             clientsToSendTo.forEach(async (client) => {
-                // await emailSvc.sendEmail(
-                //     [client.ClientEmail],
-                //     'Appointment Reminder',
-                //     getEmailBody(client.ClientName, client.SessionTime)
-                // );
+                await emailSvc.sendEmail(
+                    [client.ClientEmail],
+                    'Appointment Reminder',
+                    getEmailBody(client.ClientName, client.SessionTime)
+                );
             });
 
             const confirmMessage = `${getEmailBody(
