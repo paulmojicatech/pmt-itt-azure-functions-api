@@ -155,6 +155,7 @@ const httpTrigger: AzureFunction = async function (
                     process?.env?.PLATFORM === 'Azure'
                         ? utc.getHours() - 5
                         : utc.getHours() + 5;
+
                 const timeZoneDate = new Date(utc.setHours(offset));
 
                 const hour = timeZoneDate.getHours();
