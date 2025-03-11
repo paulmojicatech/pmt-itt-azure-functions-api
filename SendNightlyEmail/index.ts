@@ -84,9 +84,9 @@ const getFormattedDateString = (
 
 const getEmailBody = (clientName: string, sessionTime: string) => {
     return `Hi ${clientName},
-  
+
   This is a reminder that you have an upcoming TeleHealth appointment with Kirstin R. Abraham, LCSW scheduled for ${sessionTime}. You may attend your session by clicking on the following link: https://sessions.psychologytoday.com/kirstinabraham . As always, if you prefer to call instead of using video you can do so by calling (704) 233-7594 at our scheduled session time. Please feel free to make any payment due prior to your appointment on my website at: www.marvintherapy.com under the tab called “make a payment”. I look forward to hearing from you during our scheduled session.
-  
+
   Warmly,
   Kirstin R. Abraham, LCSW
       `;
@@ -155,8 +155,8 @@ const timerTrigger: AzureFunction = async function (
 
                 const offset =
                     process?.env?.PLATFORM === 'Azure'
-                        ? utc.getHours() - 5
-                        : utc.getHours() + 5;
+                        ? utc.getHours() - 4
+                        : utc.getHours() + 4;
                 const timeZoneDate = new Date(utc.setHours(offset));
                 const hour = timeZoneDate.getHours();
 
@@ -196,7 +196,7 @@ const timerTrigger: AzureFunction = async function (
                 clientsToSendTo[0].ClientName,
                 clientsToSendTo[0].SessionTime
             )}
-            
+
       ${JSON.stringify(clientsToSendTo)}`;
 
             await emailSvc.sendEmail(
